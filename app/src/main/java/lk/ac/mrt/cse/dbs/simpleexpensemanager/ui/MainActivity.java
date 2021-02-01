@@ -27,7 +27,8 @@ import android.support.v7.widget.Toolbar;
 
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.R;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.ExpenseManager;
-import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.InMemoryDemoExpenseManager;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.PersistentExpenseManager;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl.DatabaseAssist;
 
 public class MainActivity extends AppCompatActivity {
     private ExpenseManager expenseManager;
@@ -59,13 +60,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager.setOffscreenPageLimit(1);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
         /***  Begin generating dummy data for In-Memory implementation  ***/
-        expenseManager = new InMemoryDemoExpenseManager();
+//        expenseManager = new InMemoryDemoExpenseManager();
+
+
+        // Implementation of ne persistentExpenseManager
+        expenseManager = new PersistentExpenseManager(getApplicationContext());
         /*** END ***/
     }
 
@@ -114,5 +120,11 @@ public class MainActivity extends AppCompatActivity {
                     return getString(R.string.label_manage);
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        DatabaseAssist.closeDB();
     }
 }
